@@ -1,0 +1,22 @@
+services:
+  rabbitmq:
+    container_name: rabbit_mq
+    hostname: rabbit_mq_hostname
+    image: rabbitmq:3-management
+    # image: rabbitmq:4.3.0-rc.0-management-alpine
+    restart: on-failure:3
+    env_file:
+      - .env
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq:/var/lib/rabbitmq
+
+volumes:
+  rabbitmq:
+
+networks:
+  default:
+    name: soat-net
+    external: true
