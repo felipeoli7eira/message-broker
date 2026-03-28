@@ -1,6 +1,6 @@
 services:
   rabbitmq:
-    container_name: rabbit_mq
+    container_name: rabbit_mq_container_name
     hostname: rabbit_mq_hostname
     image: rabbitmq:3-management
     # image: rabbitmq:4.3.0-rc.0-management-alpine
