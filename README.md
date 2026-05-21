@@ -53,6 +53,45 @@ O sistema é composto por cinco microsserviços interligados:
 
 ---
 
+## Segurança
+
+### Requisitos básicos adotados
+
+- **Credenciais via variáveis de ambiente**: usuário e senha do RabbitMQ são injetados via `.env`, nunca hardcoded
+- **Rede Docker isolada** (`soat-net`): a porta de management UI (15672) e a porta AMQP (5672) são expostas apenas localmente para desenvolvimento; em produção devem ser restritas
+- **Autenticação no broker**: o RabbitMQ exige usuário e senha para conexão — credenciais configuradas no `.env`
+
+### Validação e tratamento de entradas não confiáveis
+
+- O RabbitMQ valida o formato das mensagens recebidas via AMQP
+- Mensagens malformadas ou rejeitadas pelos consumers são encaminhadas para a **Dead Letter Queue (DLQ)**, evitando reprocessamento infinito
+- Virtual hosts isolam os recursos do broker por ambiente
+
+### Uso controlado do modelo de IA
+
+- O broker não se comunica com a IA diretamente — atua apenas como intermediário de mensagens entre o **upload-service**, o **trigger-service** e o **Analysis Service**
+- O conteúdo das mensagens é definido pelos produtores e validado pelos consumidores, não pelo broker
+
+### Tratamento de falhas e comportamentos inesperados da IA
+
+- **Dead Letter Queue (DLQ)** configurada para as filas `protocols_queue` e `analysis_response_queue`: mensagens que falham no processamento (incluindo respostas inesperadas da IA) são capturadas sem perda
+- Mensagens com `delivery_mode: persistent` garantem que eventos não sejam perdidos em reinicializações do broker
+
+### Comunicação entre serviços
+
+- **Rede Docker interna** (`soat-net`): o broker não é acessível fora da rede interna dos containers
+- Mensagens persistentes no RabbitMQ garantem entrega mesmo após falhas temporárias
+- Comunicação assíncrona desacopla os serviços — falha em um consumer não afeta os demais
+
+### Riscos e limitações conhecidos
+
+| Risco | Impacto | Mitigação atual |
+|---|---|---|
+| Management UI (porta 15672) não deve ser exposta em produção | Acesso à interface de administração | Restringir ao ambiente local; credenciais configuradas via `.env` |
+| Acúmulo de mensagens em caso de indisponibilidade prolongada de consumers | Fila cresce sem ser consumida | DLQ captura mensagens com falha; mensagens persistentes garantem entrega posterior |
+
+---
+
 ## Instruções de Execução
 
 Observe que no [docker-compose.yaml](./docker-compose.yaml) a rede default é externa, o que significa que essa rede deve existir antes que você tente subir o serviço do rabbit:
