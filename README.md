@@ -4,6 +4,14 @@ Esse repositório foi criado para subir um rabbitMQ para atender o desenvolvimen
 
 Para entender as especificações e requisitos funcionais e não funcionais do projeto, considere ler o [documento entregue aos alunos](./hackaton-soat.pdf).
 
+## Alunos
+
+| Aluno | RM | Discord | LinkedIn |
+|---|---|---|---|
+| Felipe | 365154 | felipeoli7eira | [@felipeoli7eira](https://www.linkedin.com/in/felipeoli7eira) |
+| Nicolas | 365746 | nic_hcm | [@Nicolas Martins](https://www.linkedin.com/in/nicolas-hcm) |
+| William | 365973 | wllsistemas | [@William Francisco Leite](https://www.linkedin.com/in/williamfranciscoleite) |
+
 A arquitetura montada para atender o MVP:
 
 ![arquitetura.svg](./arquitetura.svg)
